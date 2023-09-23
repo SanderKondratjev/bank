@@ -18,4 +18,9 @@ public class HomeController {
     public ModelAndView openAccountForm() {
         return new ModelAndView("open-account");
     }
+
+    @GetMapping("/transactions")
+    public ModelAndView transactionsForm() {
+        return new ModelAndView("transactions");
+    }
 }

@@ -2,8 +2,12 @@ package com.homework.bank.repository;
 
 import com.homework.bank.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    // Define custom query methods if needed
+    List<Transaction> findByAccount_AccountId(Long accountId);
 }
 

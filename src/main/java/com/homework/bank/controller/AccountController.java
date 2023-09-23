@@ -21,7 +21,7 @@ public class AccountController {
         Account account = accountService.openAccount(accountName);
 
         ModelAndView modelAndView = new ModelAndView("account-details");
-        modelAndView.addObject("accountName", account.getAccount_name());
+        modelAndView.addObject("accountName", account.getAccountName());
         modelAndView.addObject("accountNumber", account.getIban());
 
         return modelAndView;

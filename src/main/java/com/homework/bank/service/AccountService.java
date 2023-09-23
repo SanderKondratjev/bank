@@ -44,7 +44,7 @@ public class AccountService {
         }
 
         Account account = new Account();
-        account.setAccount_name(accountName);
+        account.setAccountName(accountName);
         account.setIban(iban);
 
         account = accountRepository.save(account);
@@ -57,11 +57,11 @@ public class AccountService {
 
         Transaction initialTransaction = new Transaction();
         initialTransaction.setAccount(account);
-        initialTransaction.setTransaction_type("OPENING");
+        initialTransaction.setTransactionType("OPENING");
         initialTransaction.setAmount(BigDecimal.ZERO);
         initialTransaction.setCurrency("EUR");
         initialTransaction.setDescription("Account opened");
-        initialTransaction.setTransaction_date(new Date());
+        initialTransaction.setTransactionDate(new Date());
         transactionRepository.save(initialTransaction);
 
         AccountStatement initialStatement = new AccountStatement();
@@ -85,5 +85,15 @@ public class AccountService {
         }
 
         return accountNumber.toString();
+    }
+
+    public Account getAccountByNameOrNumber(String accountSearch) {
+        Account account = accountRepository.findByAccountName(accountSearch);
+
+        if (account == null) {
+            account = accountRepository.findByIban(accountSearch);
+        }
+
+        return account;
     }
 }

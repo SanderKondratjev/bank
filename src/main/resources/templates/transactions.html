@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Transaction List</title>
+</head>
+<body>
+<h2>Search for an Account</h2>
+<form th:action="@{/transactions/search}" method="post">
+    <label for="accountSearch">Account Name or Number:</label>
+    <input type="text" id="accountSearch" name="accountSearch" required>
+    <br>
+    <input type="submit" value="Search" class="button">
+</form>
+
+<h2>Transaction List</h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Transaction ID</th>
+        <th>Account</th>
+        <th>Transaction Type</th>
+        <th>Amount</th>
+        <th>Currency</th>
+        <th>Description</th>
+        <th>Transaction Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Iterate over the transactions and display each row -->
+    <tr th:each="transaction : ${transactionList}">
+        <td th:text="${transaction.transactionId}"></td>
+        <td th:text="${transaction.account.accountName}"></td>
+        <td th:text="${transaction.transactionType}"></td>
+        <td th:text="${transaction.amount}"></td>
+        <td th:text="${transaction.currency}"></td>
+        <td th:text="${transaction.description}"></td>
+        <td th:text="${transaction.transactionDate}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
