@@ -94,4 +94,57 @@ public class TransactionController {
             return modelAndView;
         }
     }
+
+    @PostMapping("/withdraw")
+    public ModelAndView withdrawMoney(
+            @RequestParam String accountName,
+            @RequestParam BigDecimal amount,
+            @RequestParam String description
+    ) {
+        Account account = accountService.getAccountByNameOrNumber(accountName);
+
+        if (account != null) {
+            Balance balance = balanceService.getBalanceByAccount(account);
+
+            if (balance != null && balance.getBalanceAmount().compareTo(amount) >= 0) {
+                // Sufficient balance for withdrawal
+                Transaction withdrawalTransaction = new Transaction();
+                withdrawalTransaction.setAccount(account);
+                withdrawalTransaction.setTransactionType("WITHDRAWAL");
+                withdrawalTransaction.setAmount(amount.negate()); // Withdrawal is a negative amount
+                withdrawalTransaction.setCurrency("EUR");
+                withdrawalTransaction.setDescription(description);
+                withdrawalTransaction.setTransactionDate(new Date());
+                transactionService.createTransaction(withdrawalTransaction);
+
+                BigDecimal newBalance = balance.getBalanceAmount().subtract(amount);
+                balance.setBalanceAmount(newBalance);
+                balance.setBalanceDate(new Date());
+                balanceService.updateBalance(balance);
+
+                AccountStatement accountStatement = new AccountStatement();
+                accountStatement.setAccount(account);
+                accountStatement.setTransaction(withdrawalTransaction);
+                accountStatement.setTransaction_date(new Date());
+                accountStatement.setAmount(amount.negate()); // Withdrawal is a negative amount
+                accountStatement.setCurrency("EUR");
+                accountStatement.setDescription(description);
+                accountStatementRepository.save(accountStatement);
+
+                ModelAndView modelAndView = new ModelAndView("success");
+                modelAndView.addObject("message", "Withdrawal successful");
+                return modelAndView;
+            } else {
+                // Insufficient balance for withdrawal
+                ModelAndView modelAndView = new ModelAndView("failure");
+                modelAndView.addObject("message", "Insufficient balance for withdrawal");
+                return modelAndView;
+            }
+        } else {
+            ModelAndView modelAndView = new ModelAndView("error");
+            modelAndView.addObject("message", "Account not found");
+            return modelAndView;
+        }
+    }
+
 }
