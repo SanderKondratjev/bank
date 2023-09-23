@@ -51,7 +51,6 @@
                 onUpdate="CASCADE"/>
     </changeSet>
 
-    <!-- Add foreign key constraint to link Transaction and AccountStatement tables -->
     <changeSet id="add-foreign-key-transaction-account-statement" author="sander-kondratjev">
         <addForeignKeyConstraint
                 baseTableName="account_statement"

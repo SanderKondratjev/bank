@@ -43,35 +43,27 @@ public class AccountService {
             accountName = accountName.substring("accountName=".length());
         }
 
-        // Create a new account
         Account account = new Account();
         account.setAccount_name(accountName);
         account.setIban(iban);
 
-        // Save the account to the database first
         account = accountRepository.save(account);
 
-        // Set initial balance to 0 with the current date and time
         Balance initialBalance = new Balance();
         initialBalance.setAccount(account);
         initialBalance.setBalance_amount(BigDecimal.ZERO);
-        initialBalance.setBalance_date(new Date()); // Set the balance_date to the current date and time
+        initialBalance.setBalance_date(new Date());
         balanceRepository.save(initialBalance);
 
-        // Create an initial transaction for account opening (if needed)
         Transaction initialTransaction = new Transaction();
         initialTransaction.setAccount(account);
         initialTransaction.setTransaction_type("OPENING");
         initialTransaction.setAmount(BigDecimal.ZERO);
         initialTransaction.setCurrency("EUR");
         initialTransaction.setDescription("Account opened");
-
-// Set the transaction_date to the current date and time
         initialTransaction.setTransaction_date(new Date());
-
         transactionRepository.save(initialTransaction);
 
-        // Create an initial account statement (if needed)
         AccountStatement initialStatement = new AccountStatement();
         initialStatement.setAccount(account);
         initialStatement.setTransaction(initialTransaction);
