@@ -1,8 +1,10 @@
 package com.homework.bank.controller;
 
 import com.homework.bank.model.Account;
+import com.homework.bank.model.AccountStatement;
 import com.homework.bank.model.Balance;
 import com.homework.bank.model.Transaction;
+import com.homework.bank.repository.AccountStatementRepository;
 import com.homework.bank.service.AccountService;
 import com.homework.bank.service.BalanceService;
 import com.homework.bank.service.TransactionService;
@@ -28,6 +30,8 @@ public class TransactionController {
     @Autowired
     private BalanceService balanceService;
 
+    @Autowired
+    private AccountStatementRepository accountStatementRepository;
 
     @PostMapping("/search")
     public ModelAndView searchAccount(@RequestParam String accountSearch) {
@@ -71,6 +75,15 @@ public class TransactionController {
             balance.setBalanceAmount(newBalance);
             balance.setBalanceDate(new Date());
             balanceService.updateBalance(balance);
+
+            AccountStatement accountStatement = new AccountStatement();
+            accountStatement.setAccount(account);
+            accountStatement.setTransaction(depositTransaction);
+            accountStatement.setTransaction_date(new Date());
+            accountStatement.setAmount(amount);
+            accountStatement.setCurrency("EUR");
+            accountStatement.setDescription(description);
+            accountStatementRepository.save(accountStatement);
 
             ModelAndView modelAndView = new ModelAndView("success");
             modelAndView.addObject("message", "Deposit successful");
