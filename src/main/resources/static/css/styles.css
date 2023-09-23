@@ -46,8 +46,11 @@ input[type="text"] {
     font-size: 18px;
     text-decoration: none;
     width: 100%; /* Ensure buttons take the full width */
+    display: inline-block; /* Add this line to fix button width issue */
+    transition: background-color 0.3s;
 }
 
 .button a:hover {
     background-color: #0056b3;
+    transform: scale(1.05); /* Add a slight scale effect on hover */
 }
