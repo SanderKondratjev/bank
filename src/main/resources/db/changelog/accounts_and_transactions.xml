@@ -28,4 +28,40 @@
         </createTable>
     </changeSet>
 
+    <!-- Add foreign key constraint to link Account and Transaction tables -->
+    <changeSet id="add-foreign-key-transaction" author="sander-kondratjev">
+        <addForeignKeyConstraint
+                baseTableName="transaction"
+                baseColumnNames="account_id"
+                constraintName="fk_transaction_account"
+                referencedTableName="account"
+                referencedColumnNames="account_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+    <!-- Add foreign key constraint to link Account and AccountStatement tables -->
+    <changeSet id="add-foreign-key-account-statement" author="sander-kondratjev">
+        <addForeignKeyConstraint
+                baseTableName="account_statement"
+                baseColumnNames="account_id"
+                constraintName="fk_account_statement_account"
+                referencedTableName="account"
+                referencedColumnNames="account_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+
+    <!-- Add foreign key constraint to link Transaction and AccountStatement tables -->
+    <changeSet id="add-foreign-key-transaction-account-statement" author="sander-kondratjev">
+        <addForeignKeyConstraint
+                baseTableName="account_statement"
+                baseColumnNames="transaction_id"
+                constraintName="fk_account_statement_transaction"
+                referencedTableName="transaction"
+                referencedColumnNames="transaction_id"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+
+
 </databaseChangeLog>
