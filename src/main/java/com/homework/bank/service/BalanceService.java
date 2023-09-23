@@ -33,4 +33,8 @@ public class BalanceService {
     public void updateBalance(Balance balance) {
         balanceRepository.save(balance);
     }
+
+    public Balance getBalanceByAccountAndCurrency(Account account, String currency) {
+        return balanceRepository.findByAccountAndCurrency(account, currency);
+    }
 }

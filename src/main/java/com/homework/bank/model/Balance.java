@@ -22,6 +22,9 @@ public class Balance {
     @Column(name = "balance_date")
     private Date balanceDate;
 
+    @Column(name = "currency", length = 3) // Add currency field with a length of 3 characters
+    private String currency;
+
     public Long getBalanceId() {
         return balanceId;
     }
@@ -52,5 +55,13 @@ public class Balance {
 
     public void setBalanceDate(Date balanceDate) {
         this.balanceDate = balanceDate;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

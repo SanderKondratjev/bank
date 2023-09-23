@@ -52,6 +52,7 @@ public class AccountService {
         Balance initialBalance = new Balance();
         initialBalance.setAccount(account);
         initialBalance.setBalanceAmount(BigDecimal.ZERO);
+        initialBalance.setCurrency("EUR");
         initialBalance.setBalanceDate(new Date());
         balanceRepository.save(initialBalance);
 

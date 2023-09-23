@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BalanceRepository extends JpaRepository<Balance, Long> {
     Balance findByAccount(Account account);
+
+    Balance findByAccountAndCurrency(Account account, String currency);
 }

@@ -56,7 +56,8 @@ public class TransactionController {
     public ModelAndView depositMoney(
             @RequestParam String accountName,
             @RequestParam BigDecimal amount,
-            @RequestParam String description
+            @RequestParam String description,
+            @RequestParam String currency
     ) {
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
@@ -65,12 +66,19 @@ public class TransactionController {
             depositTransaction.setAccount(account);
             depositTransaction.setTransactionType("DEPOSIT");
             depositTransaction.setAmount(amount);
-            depositTransaction.setCurrency("EUR");
+            depositTransaction.setCurrency(currency);
             depositTransaction.setDescription(description);
             depositTransaction.setTransactionDate(new Date());
             transactionService.createTransaction(depositTransaction);
 
-            Balance balance = balanceService.getBalanceByAccount(account);
+            Balance balance = balanceService.getBalanceByAccountAndCurrency(account, currency);
+            if (balance == null) {
+                balance = new Balance();
+                balance.setAccount(account);
+                balance.setBalanceAmount(BigDecimal.ZERO);
+                balance.setCurrency(currency);
+            }
+
             BigDecimal newBalance = balance.getBalanceAmount().add(amount);
             balance.setBalanceAmount(newBalance);
             balance.setBalanceDate(new Date());
@@ -81,7 +89,7 @@ public class TransactionController {
             accountStatement.setTransaction(depositTransaction);
             accountStatement.setTransaction_date(new Date());
             accountStatement.setAmount(amount);
-            accountStatement.setCurrency("EUR");
+            accountStatement.setCurrency(currency);
             accountStatement.setDescription(description);
             accountStatementRepository.save(accountStatement);
 
@@ -99,19 +107,20 @@ public class TransactionController {
     public ModelAndView withdrawMoney(
             @RequestParam String accountName,
             @RequestParam BigDecimal amount,
-            @RequestParam String description
+            @RequestParam String description,
+            @RequestParam String currency
     ) {
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
         if (account != null) {
-            Balance balance = balanceService.getBalanceByAccount(account);
+            Balance balance = balanceService.getBalanceByAccountAndCurrency(account, currency);
 
             if (balance != null && balance.getBalanceAmount().compareTo(amount) >= 0) {
                 Transaction withdrawalTransaction = new Transaction();
                 withdrawalTransaction.setAccount(account);
                 withdrawalTransaction.setTransactionType("WITHDRAWAL");
                 withdrawalTransaction.setAmount(amount.negate());
-                withdrawalTransaction.setCurrency("EUR");
+                withdrawalTransaction.setCurrency(currency);
                 withdrawalTransaction.setDescription(description);
                 withdrawalTransaction.setTransactionDate(new Date());
                 transactionService.createTransaction(withdrawalTransaction);
@@ -125,8 +134,8 @@ public class TransactionController {
                 accountStatement.setAccount(account);
                 accountStatement.setTransaction(withdrawalTransaction);
                 accountStatement.setTransaction_date(new Date());
-                accountStatement.setAmount(amount.negate()); // Withdrawal is a negative amount
-                accountStatement.setCurrency("EUR");
+                accountStatement.setAmount(amount.negate());
+                accountStatement.setCurrency(currency);
                 accountStatement.setDescription(description);
                 accountStatementRepository.save(accountStatement);
 
@@ -135,7 +144,7 @@ public class TransactionController {
                 return modelAndView;
             } else {
                 ModelAndView modelAndView = new ModelAndView("failure");
-                modelAndView.addObject("message", "Insufficient balance for withdrawal");
+                modelAndView.addObject("message", "Insufficient balance for withdrawal or currency not available");
                 return modelAndView;
             }
         } else {
@@ -144,5 +153,6 @@ public class TransactionController {
             return modelAndView;
         }
     }
+
 
 }

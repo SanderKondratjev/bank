@@ -41,4 +41,9 @@
                 onUpdate="CASCADE"/>
     </changeSet>
 
+    <changeSet id="add-currency-to-balance" author="sander-kondratjev">
+        <addColumn tableName="balance">
+            <column name="currency" type="VARCHAR(3)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
