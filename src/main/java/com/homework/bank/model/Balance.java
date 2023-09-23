@@ -5,30 +5,29 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "balance")
 public class Balance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "balance_id")
-    private Long balance_id;
+    private Long balanceId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
     @Column(name = "balance_amount")
-    private BigDecimal balance_amount;
+    private BigDecimal balanceAmount;
 
     @Column(name = "balance_date")
-    private Date balance_date;
+    private Date balanceDate;
 
-    public Long getBalance_id() {
-        return balance_id;
+    public Long getBalanceId() {
+        return balanceId;
     }
 
-    public void setBalance_id(Long balance_id) {
-        this.balance_id = balance_id;
+    public void setBalanceId(Long balanceId) {
+        this.balanceId = balanceId;
     }
 
     public Account getAccount() {
@@ -39,20 +38,19 @@ public class Balance {
         this.account = account;
     }
 
-    public BigDecimal getBalance_amount() {
-        return balance_amount;
+    public BigDecimal getBalanceAmount() {
+        return balanceAmount;
     }
 
-    public void setBalance_amount(BigDecimal balance_amount) {
-        this.balance_amount = balance_amount;
+    public void setBalanceAmount(BigDecimal balanceAmount) {
+        this.balanceAmount = balanceAmount;
     }
 
-    public Date getBalance_date() {
-        return balance_date;
+    public Date getBalanceDate() {
+        return balanceDate;
     }
 
-    public void setBalance_date(Date balance_date) {
-        this.balance_date = balance_date;
+    public void setBalanceDate(Date balanceDate) {
+        this.balanceDate = balanceDate;
     }
 }
-

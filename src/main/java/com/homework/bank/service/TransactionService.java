@@ -17,4 +17,8 @@ public class TransactionService {
     public List<Transaction> getTransactionsForAccount(Account account) {
         return transactionRepository.findByAccount_AccountId(account.getAccountId());
     }
+
+    public void createTransaction(Transaction transaction) {
+        transactionRepository.save(transaction);
+    }
 }

@@ -51,8 +51,8 @@ public class AccountService {
 
         Balance initialBalance = new Balance();
         initialBalance.setAccount(account);
-        initialBalance.setBalance_amount(BigDecimal.ZERO);
-        initialBalance.setBalance_date(new Date());
+        initialBalance.setBalanceAmount(BigDecimal.ZERO);
+        initialBalance.setBalanceDate(new Date());
         balanceRepository.save(initialBalance);
 
         Transaction initialTransaction = new Transaction();
