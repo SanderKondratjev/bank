@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Open Account</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+<body>
+<h1>Open an Account</h1>
+<form th:action="@{/accounts/open}" method="post">
+    <label for="accountName">Account Name:</label>
+    <input type="text" id="accountName" name="accountName">
+    <button type="submit">Open Account</button>
+</form>
+</body>
+</html>

@@ -4,8 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
-    <changeSet id="create-accounts-table" author="your-name">
-        <createTable tableName="accounts">
+    <changeSet id="create-account-table" author="sander-kondratjev">
+        <createTable tableName="account">
             <column name="account_id" type="SERIAL">
                 <constraints primaryKey="true"/>
             </column>
@@ -14,8 +14,8 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-transactions-table" author="your-name">
-        <createTable tableName="transactions">
+    <changeSet id="create-transaction-table" author="sander-kondratjev">
+        <createTable tableName="transaction">
             <column name="transaction_id" type="SERIAL">
                 <constraints primaryKey="true"/>
             </column>

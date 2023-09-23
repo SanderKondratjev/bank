@@ -5,7 +5,7 @@
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
 
-    <changeSet id="create-balance-table" author="your-name">
+    <changeSet id="create-balance-table" author="sander-kondratjev">
         <createTable tableName="balance">
             <column name="balance_id" type="SERIAL">
                 <constraints primaryKey="true"/>
@@ -16,7 +16,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-account-statement-table" author="your-name">
+    <changeSet id="create-account-statement-table" author="sander-kondratjev">
         <createTable tableName="account_statement">
             <column name="statement_id" type="SERIAL">
                 <constraints primaryKey="true"/>
