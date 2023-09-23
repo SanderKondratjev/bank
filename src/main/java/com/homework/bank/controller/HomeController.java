@@ -23,4 +23,9 @@ public class HomeController {
     public ModelAndView transactionsForm() {
         return new ModelAndView("transactions");
     }
+
+    @GetMapping("/balances")
+    public ModelAndView balancesForm() {
+        return new ModelAndView("balances");
+    }
 }

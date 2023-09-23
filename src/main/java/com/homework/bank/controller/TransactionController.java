@@ -107,11 +107,10 @@ public class TransactionController {
             Balance balance = balanceService.getBalanceByAccount(account);
 
             if (balance != null && balance.getBalanceAmount().compareTo(amount) >= 0) {
-                // Sufficient balance for withdrawal
                 Transaction withdrawalTransaction = new Transaction();
                 withdrawalTransaction.setAccount(account);
                 withdrawalTransaction.setTransactionType("WITHDRAWAL");
-                withdrawalTransaction.setAmount(amount.negate()); // Withdrawal is a negative amount
+                withdrawalTransaction.setAmount(amount.negate());
                 withdrawalTransaction.setCurrency("EUR");
                 withdrawalTransaction.setDescription(description);
                 withdrawalTransaction.setTransactionDate(new Date());
@@ -135,7 +134,6 @@ public class TransactionController {
                 modelAndView.addObject("message", "Withdrawal successful");
                 return modelAndView;
             } else {
-                // Insufficient balance for withdrawal
                 ModelAndView modelAndView = new ModelAndView("failure");
                 modelAndView.addObject("message", "Insufficient balance for withdrawal");
                 return modelAndView;
