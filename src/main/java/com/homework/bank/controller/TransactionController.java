@@ -57,7 +57,6 @@ public class TransactionController {
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
         if (account != null) {
-            // Create a new transaction for the deposit
             Transaction depositTransaction = new Transaction();
             depositTransaction.setAccount(account);
             depositTransaction.setTransactionType("DEPOSIT");
@@ -67,14 +66,12 @@ public class TransactionController {
             depositTransaction.setTransactionDate(new Date());
             transactionService.createTransaction(depositTransaction);
 
-            // Update the balance in the balance table
             Balance balance = balanceService.getBalanceByAccount(account);
             BigDecimal newBalance = balance.getBalanceAmount().add(amount);
             balance.setBalanceAmount(newBalance);
             balance.setBalanceDate(new Date());
             balanceService.updateBalance(balance);
 
-            // Redirect to a success page or transaction history
             ModelAndView modelAndView = new ModelAndView("success");
             modelAndView.addObject("message", "Deposit successful");
             return modelAndView;
