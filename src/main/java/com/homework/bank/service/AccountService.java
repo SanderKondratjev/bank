@@ -68,7 +68,7 @@ public class AccountService {
         AccountStatement initialStatement = new AccountStatement();
         initialStatement.setAccount(account);
         initialStatement.setTransaction(initialTransaction);
-        initialStatement.setTransaction_date(new Date());
+        initialStatement.setTransactionDate(new Date());
         initialStatement.setAmount(BigDecimal.ZERO);
         initialStatement.setCurrency("EUR");
         initialStatement.setDescription("Account opened");

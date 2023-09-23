@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Statement</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+<body>
+<div class="container">
+    <h2>Account Statement</h2>
+
+    <form action="/account-statement/search" method="post">
+        <label for="accountName">Account Name:</label>
+        <input type="text" id="accountName" name="accountName" required>
+        <input type="submit" value="Search" class="button">
+    </form>
+
+    <!-- Use Thymeleaf conditional rendering to check if there are any account statements -->
+    <table class="account-statement-table" th:if="${not #lists.isEmpty(accountStatements)}">
+        <thead>
+        <tr>
+            <th>Transaction Date</th>
+            <th>Amount</th>
+            <th>Currency</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Use Thymeleaf to iterate through the list of account statements -->
+        <tr th:each="statement : ${accountStatements}">
+            <td th:text="${#dates.format(statement.transactionDate, 'dd/MM/yyyy HH:mm:ss')}"></td>
+            <td th:text="${statement.amount}"></td>
+            <td th:text="${statement.currency}"></td>
+            <td th:text="${statement.description}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Display a message when there are no account statements -->
+    <div th:if="${#lists.isEmpty(accountStatements) and param.accountName != null}">
+        <p>No account statements found.</p>
+    </div>
+
+    <div class="button-container">
+        <a href="/" class="button">Go Back to Homepage</a>
+    </div>
+</div>
+</body>
+</html>

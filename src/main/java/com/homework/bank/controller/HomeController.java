@@ -28,4 +28,9 @@ public class HomeController {
     public ModelAndView balancesForm() {
         return new ModelAndView("balances");
     }
+
+    @GetMapping("/account-statement")
+    public ModelAndView accountStatementForm() {
+        return new ModelAndView("account-statement");
+    }
 }

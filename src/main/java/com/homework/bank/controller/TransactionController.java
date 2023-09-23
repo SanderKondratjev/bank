@@ -46,7 +46,7 @@ public class TransactionController {
 
             return modelAndView;
         } else {
-            ModelAndView modelAndView = new ModelAndView("error");
+            ModelAndView modelAndView = new ModelAndView("failure");
             modelAndView.addObject("message", "Account not found");
             return modelAndView;
         }
@@ -62,6 +62,11 @@ public class TransactionController {
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
         if (account != null) {
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                ModelAndView modelAndView = new ModelAndView("failure");
+                modelAndView.addObject("message", "Deposit amount cant be negative");
+                return modelAndView;
+            }
             Transaction depositTransaction = new Transaction();
             depositTransaction.setAccount(account);
             depositTransaction.setTransactionType("DEPOSIT");
@@ -87,7 +92,7 @@ public class TransactionController {
             AccountStatement accountStatement = new AccountStatement();
             accountStatement.setAccount(account);
             accountStatement.setTransaction(depositTransaction);
-            accountStatement.setTransaction_date(new Date());
+            accountStatement.setTransactionDate(new Date());
             accountStatement.setAmount(amount);
             accountStatement.setCurrency(currency);
             accountStatement.setDescription(description);
@@ -97,7 +102,7 @@ public class TransactionController {
             modelAndView.addObject("message", "Deposit successful");
             return modelAndView;
         } else {
-            ModelAndView modelAndView = new ModelAndView("error");
+            ModelAndView modelAndView = new ModelAndView("failure");
             modelAndView.addObject("message", "Account not found");
             return modelAndView;
         }
@@ -113,6 +118,11 @@ public class TransactionController {
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
         if (account != null) {
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                ModelAndView modelAndView = new ModelAndView("failure");
+                modelAndView.addObject("message", "Withdrawal amount cant be negative");
+                return modelAndView;
+            }
             Balance balance = balanceService.getBalanceByAccountAndCurrency(account, currency);
 
             if (balance != null && balance.getBalanceAmount().compareTo(amount) >= 0) {
@@ -133,7 +143,7 @@ public class TransactionController {
                 AccountStatement accountStatement = new AccountStatement();
                 accountStatement.setAccount(account);
                 accountStatement.setTransaction(withdrawalTransaction);
-                accountStatement.setTransaction_date(new Date());
+                accountStatement.setTransactionDate(new Date());
                 accountStatement.setAmount(amount.negate());
                 accountStatement.setCurrency(currency);
                 accountStatement.setDescription(description);
@@ -148,7 +158,7 @@ public class TransactionController {
                 return modelAndView;
             }
         } else {
-            ModelAndView modelAndView = new ModelAndView("error");
+            ModelAndView modelAndView = new ModelAndView("failure");
             modelAndView.addObject("message", "Account not found");
             return modelAndView;
         }

@@ -11,7 +11,7 @@ public class AccountStatement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statement_id")
-    private Long statement_id;
+    private Long statementId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transaction_id")
@@ -22,7 +22,7 @@ public class AccountStatement {
     private Account account;
 
     @Column(name = "transaction_date")
-    private Date transaction_date;
+    private Date transactionDate;
 
     @Column(name = "amount")
     private BigDecimal amount;
@@ -33,12 +33,12 @@ public class AccountStatement {
     @Column(name = "description")
     private String description;
 
-    public Long getStatement_id() {
-        return statement_id;
+    public Long getStatementId() {
+        return statementId;
     }
 
-    public void setStatement_id(Long statement_id) {
-        this.statement_id = statement_id;
+    public void setStatementId(Long statementId) {
+        this.statementId = statementId;
     }
 
     public Transaction getTransaction() {
@@ -57,12 +57,12 @@ public class AccountStatement {
         this.account = account;
     }
 
-    public Date getTransaction_date() {
-        return transaction_date;
+    public Date getTransactionDate() {
+        return transactionDate;
     }
 
-    public void setTransaction_date(Date transaction_date) {
-        this.transaction_date = transaction_date;
+    public void setTransactionDate(Date transactionDate) {
+        this.transactionDate = transactionDate;
     }
 
     public BigDecimal getAmount() {
@@ -89,4 +89,3 @@ public class AccountStatement {
         this.description = description;
     }
 }
-
