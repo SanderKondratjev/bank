@@ -20,10 +20,15 @@ public class AccountController {
     public ModelAndView openAccount(@RequestBody String accountName) {
         Account account = accountService.openAccount(accountName);
 
-        ModelAndView modelAndView = new ModelAndView("account-details");
-        modelAndView.addObject("accountName", account.getAccountName());
-        modelAndView.addObject("accountNumber", account.getIban());
-
-        return modelAndView;
+        if (account != null) {
+            ModelAndView modelAndView = new ModelAndView("account-details");
+            modelAndView.addObject("accountName", account.getAccountName());
+            modelAndView.addObject("accountNumber", account.getIban());
+            return modelAndView;
+        } else {
+            ModelAndView errorModelAndView = new ModelAndView("failure");
+            errorModelAndView.addObject("message", "Account creation failed. Account name already taken. Try again with new account name.");
+            return errorModelAndView;
+        }
     }
 }

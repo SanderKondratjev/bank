@@ -14,9 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NonUniqueResultException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Random;
 
 
 @Service
@@ -37,64 +40,94 @@ public class AccountService {
     private AccountStatementRepository accountStatementRepository;
 
     public Account openAccount(String accountName) {
-        String iban = generateIban();
-
         if (accountName.startsWith("accountName=")) {
             accountName = accountName.substring("accountName=".length());
         }
 
-        Account account = new Account();
-        account.setAccountName(accountName);
-        account.setIban(iban);
+        try {
+            Account existingAccount = accountRepository.findByAccountName(accountName);
+            if (existingAccount != null) {
+                log.error("An account with the name {} already exists.", accountName);
+                return null;
+            }
 
-        account = accountRepository.save(account);
+            String iban = generateIban();
 
-        Balance initialBalance = new Balance();
-        initialBalance.setAccount(account);
-        initialBalance.setBalanceAmount(BigDecimal.ZERO);
-        initialBalance.setCurrency("EUR");
-        initialBalance.setBalanceDate(new Date());
-        balanceRepository.save(initialBalance);
+            Account account = new Account();
+            account.setAccountName(accountName);
+            account.setIban(iban);
 
-        Transaction initialTransaction = new Transaction();
-        initialTransaction.setAccount(account);
-        initialTransaction.setTransactionType("OPENING");
-        initialTransaction.setAmount(BigDecimal.ZERO);
-        initialTransaction.setCurrency("EUR");
-        initialTransaction.setDescription("Account opened");
-        initialTransaction.setTransactionDate(new Date());
-        transactionRepository.save(initialTransaction);
+            account = accountRepository.save(account);
 
-        AccountStatement initialStatement = new AccountStatement();
-        initialStatement.setAccount(account);
-        initialStatement.setTransaction(initialTransaction);
-        initialStatement.setTransactionDate(new Date());
-        initialStatement.setAmount(BigDecimal.ZERO);
-        initialStatement.setCurrency("EUR");
-        initialStatement.setDescription("Account opened");
-        accountStatementRepository.save(initialStatement);
+            Balance initialBalance = new Balance();
+            initialBalance.setAccount(account);
+            initialBalance.setBalanceAmount(BigDecimal.ZERO);
+            initialBalance.setCurrency("EUR");
+            initialBalance.setBalanceDate(new Date());
+            balanceRepository.save(initialBalance);
 
-        return account;
+            Transaction initialTransaction = new Transaction();
+            initialTransaction.setAccount(account);
+            initialTransaction.setTransactionType("OPENING");
+            initialTransaction.setAmount(BigDecimal.ZERO);
+            initialTransaction.setCurrency("EUR");
+            initialTransaction.setDescription("Account opened");
+            initialTransaction.setTransactionDate(new Date());
+            transactionRepository.save(initialTransaction);
+
+            AccountStatement initialStatement = new AccountStatement();
+            initialStatement.setAccount(account);
+            initialStatement.setTransaction(initialTransaction);
+            initialStatement.setTransactionDate(new Date());
+            initialStatement.setAmount(BigDecimal.ZERO);
+            initialStatement.setCurrency("EUR");
+            initialStatement.setDescription("Account opened");
+            accountStatementRepository.save(initialStatement);
+
+            return account;
+        } catch (
+                NonUniqueResultException e) {
+            log.error("This account name has already take: " + accountName);
+            return null;
+        }
     }
 
+        private static String generateIban () {
+            String country = "EE";
 
-    private String generateIban() { // TODO The system should generate a valid IBAN for the account (ISO 13616) during the account creation process
-        StringBuilder accountNumber = new StringBuilder("EE");
-        SecureRandom random = new SecureRandom();
-        for (int i = 0; i < 18; i++) {
-            accountNumber.append(random.nextInt(10));
+            StringBuilder accountNumber = new StringBuilder();
+            Random random = new Random();
+            for (int i = 0; i < 12; i++) {
+                accountNumber.append(random.nextInt(10));
+            }
+
+            String iban = country + "00" + accountNumber;
+            int checksum = calculateIbanChecksum(iban);
+
+            String ibanChecksum = String.format("%02d", checksum);
+            iban = country + ibanChecksum + "0000" + accountNumber;
+
+            return iban;
         }
 
-        return accountNumber.toString();
-    }
+        private static int calculateIbanChecksum (String iban){
+            iban = iban.substring(4) + iban.substring(0, 2) + "00";
 
-    public Account getAccountByNameOrNumber(String accountSearch) {
-        Account account = accountRepository.findByAccountName(accountSearch);
+            String digits = iban.replaceAll("[^0-9]", "");
 
-        if (account == null) {
-            account = accountRepository.findByIban(accountSearch);
+            BigInteger ibanNumber = new BigInteger(digits);
+            int checksum = 98 - ibanNumber.mod(BigInteger.valueOf(97)).intValue();
+
+            return checksum;
         }
 
-        return account;
+        public Account getAccountByNameOrNumber (String accountSearch){
+            Account account = accountRepository.findByAccountName(accountSearch);
+
+            if (account == null) {
+                account = accountRepository.findByIban(accountSearch);
+            }
+
+            return account;
+        }
     }
-}
