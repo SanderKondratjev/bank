@@ -96,9 +96,9 @@ public class TransactionController {
                 return createFailureModelAndView("Withdrawal amount cant be negative");
             }
 
-            Balance balance = balanceService.getBalanceByAccountAndCurrency(account, currency);
+            BigDecimal balance = balanceService.getCurrentBalance(account, currency);
 
-            if (balance != null && balance.getBalanceAmount().compareTo(amount) >= 0) {
+            if (balance != null && balance.compareTo(amount) >= 0) {
                 Transaction withdrawalTransaction = transactionService.createWithdrawalTransaction(account, amount, currency, description);
 
                 balanceService.updateBalance(account, currency, amount.negate());

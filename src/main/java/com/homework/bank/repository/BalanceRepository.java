@@ -10,4 +10,7 @@ public interface BalanceRepository extends JpaRepository<Balance, Long> {
     Balance findByAccount(Account account);
 
     Balance findByAccountAndCurrency(Account account, String currency);
+
+    Balance findTop1ByAccountAndCurrencyOrderByBalanceDateDesc(Account account, String currency);
+
 }
