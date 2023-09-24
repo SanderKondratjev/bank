@@ -29,7 +29,6 @@ public class AccountIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        // Clear the data (e.g., by deleting all accounts) before each test
         accountService.deleteAllAccounts();
     }
 

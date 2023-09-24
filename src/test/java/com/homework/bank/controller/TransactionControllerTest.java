@@ -44,7 +44,6 @@ public class TransactionControllerTest {
 
     @Test
     public void testSearchAccountFound() {
-        // Arrange
         String accountSearch = "account123";
         Account account = new Account();
         account.setAccountName(accountSearch);
@@ -52,10 +51,8 @@ public class TransactionControllerTest {
         when(accountService.getAccountByNameOrNumber(accountSearch)).thenReturn(account);
         when(transactionService.getTransactionsForAccount(account)).thenReturn(transactions);
 
-        // Act
         ModelAndView modelAndView = transactionController.searchAccount(accountSearch);
 
-        // Assert
         verify(accountService, times(1)).getAccountByNameOrNumber(accountSearch);
         verify(transactionService, times(1)).getTransactionsForAccount(account);
         assertEquals("transactions", modelAndView.getViewName());
@@ -65,14 +62,11 @@ public class TransactionControllerTest {
 
     @Test
     public void testSearchAccountNotFound() {
-        // Arrange
         String accountSearch = "account123";
         when(accountService.getAccountByNameOrNumber(accountSearch)).thenReturn(null);
 
-        // Act
         ModelAndView modelAndView = transactionController.searchAccount(accountSearch);
 
-        // Assert
         verify(accountService, times(1)).getAccountByNameOrNumber(accountSearch);
         assertEquals("failure", modelAndView.getViewName());
         assertEquals("Account not found", modelAndView.getModel().get("message"));
@@ -134,7 +128,6 @@ public class TransactionControllerTest {
 
     @Test
     public void testWithdrawMoneyFailureInsufficientBalance() {
-        // Arrange
         String accountName = "account123";
         BigDecimal amount = new BigDecimal("200.00");
         String currency = "USD";
@@ -146,10 +139,8 @@ public class TransactionControllerTest {
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(account);
         when(balanceService.getCurrentBalance(account, currency)).thenReturn(new BigDecimal("100.00"));
 
-        // Act
         ModelAndView modelAndView = transactionController.withdrawMoney(accountName, amount, description, currency);
 
-        // Assert
         verify(accountService, times(1)).getAccountByNameOrNumber(accountName);
         verify(balanceService, times(1)).getCurrentBalance(account, currency);
 
@@ -159,7 +150,6 @@ public class TransactionControllerTest {
 
     @Test
     public void testWithdrawMoneyFailureAccountNotFound() {
-        // Arrange
         String accountName = "account123";
         BigDecimal amount = new BigDecimal("50.00");
         String currency = "USD";
@@ -167,10 +157,8 @@ public class TransactionControllerTest {
 
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(null);
 
-        // Act
         ModelAndView modelAndView = transactionController.withdrawMoney(accountName, amount, description, currency);
 
-        // Assert
         verify(accountService, times(1)).getAccountByNameOrNumber(accountName);
 
         assertEquals("failure", modelAndView.getViewName());
@@ -179,16 +167,13 @@ public class TransactionControllerTest {
 
     @Test
     public void testWithdrawMoneyFailureNegativeAmount() {
-        // Arrange
         String accountName = "account123";
         BigDecimal amount = new BigDecimal("-50.00");
         String currency = "USD";
         String description = "Withdrawal for testing";
 
-        // Act
         ModelAndView modelAndView = transactionController.withdrawMoney(accountName, amount, description, currency);
 
-        // Assert
         verify(accountService, never()).getAccountByNameOrNumber(accountName);
 
         assertEquals("failure", modelAndView.getViewName());
@@ -197,7 +182,6 @@ public class TransactionControllerTest {
 
     @Test
     public void testDepositMoneyFailureAccountNotFound() {
-        // Arrange
         String accountName = "account123";
         BigDecimal amount = new BigDecimal("100.00");
         String currency = "EUR";
@@ -205,10 +189,8 @@ public class TransactionControllerTest {
 
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(null);
 
-        // Act
         ModelAndView modelAndView = transactionController.depositMoney(accountName, amount, description, currency);
 
-        // Assert
         verify(accountService, times(1)).getAccountByNameOrNumber(accountName);
 
         assertEquals("failure", modelAndView.getViewName());

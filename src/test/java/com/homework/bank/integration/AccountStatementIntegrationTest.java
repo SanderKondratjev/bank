@@ -38,7 +38,6 @@ public class AccountStatementIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        // Mock some data for the test
         Account testAccount = new Account();
         testAccount.setAccountId(1L);
         testAccount.setAccountName("TestAccount");

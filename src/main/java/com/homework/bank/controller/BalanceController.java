@@ -1,13 +1,15 @@
 package com.homework.bank.controller;
 
 import com.homework.bank.model.Account;
-import com.homework.bank.model.Balance;
 import com.homework.bank.service.AccountService;
 import com.homework.bank.service.BalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/balances")
@@ -30,11 +32,22 @@ public class BalanceController {
         ModelAndView modelAndView = new ModelAndView("balances");
 
         if (account != null) {
-            Balance balance = balanceService.getBalanceByAccount(account);
-            if (balance != null) {
-                modelAndView.addObject("message", "Balance: " + balance.getBalanceAmount() + " EUR");
+            List<String> currencies = List.of("EUR", "USD", "GBP");
+
+            StringBuilder message = new StringBuilder("Balances: ");
+
+            for (String currency : currencies) {
+                BigDecimal balance = balanceService.getCurrentBalance(account, currency);
+                if (balance != null) {
+                    message.append(balance).append(" ").append(currency).append(", ");
+                }
+            }
+
+            if (message.length() > "Balances: ".length()) {
+                message.setLength(message.length() - 2);
+                modelAndView.addObject("message", message.toString());
             } else {
-                modelAndView.addObject("message", "Balance not found for this account.");
+                modelAndView.addObject("message", "Balances not found for this account.");
             }
         } else {
             modelAndView.addObject("message", "Account not found.");
@@ -42,4 +55,5 @@ public class BalanceController {
 
         return modelAndView;
     }
+
 }

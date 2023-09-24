@@ -22,7 +22,7 @@ public class Balance {
     @Column(name = "balance_date")
     private Date balanceDate;
 
-    @Column(name = "currency", length = 3) // Add currency field with a length of 3 characters
+    @Column(name = "currency", length = 3)
     private String currency;
 
     public Long getBalanceId() {

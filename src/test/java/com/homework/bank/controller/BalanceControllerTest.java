@@ -1,7 +1,6 @@
 package com.homework.bank.controller;
 
 import com.homework.bank.model.Account;
-import com.homework.bank.model.Balance;
 import com.homework.bank.service.AccountService;
 import com.homework.bank.service.BalanceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,30 +32,28 @@ class BalanceControllerTest {
     }
 
     @Test
-    void testCheckBalance() {
+    void testCheckBalanceWithBalanceFound() {
         String accountName = "account123";
         Account account = new Account();
         account.setAccountName(accountName);
 
-        Balance balance = new Balance();
-        balance.setBalanceAmount(BigDecimal.valueOf(100.00));
+        BigDecimal balanceAmount = BigDecimal.valueOf(100.00);
 
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(account);
-        when(balanceService.getBalanceByAccount(account)).thenReturn(balance);
+        when(balanceService.getCurrentBalance(account, "EUR")).thenReturn(balanceAmount);
 
         ModelAndView modelAndView = balanceController.checkBalance(accountName);
 
         verify(accountService).getAccountByNameOrNumber(accountName);
-        verify(balanceService).getBalanceByAccount(account);
+        verify(balanceService).getCurrentBalance(account, "EUR");
 
         assertEquals("balances", modelAndView.getViewName());
-        assertEquals("Balance: 100.0 EUR", modelAndView.getModel().get("message"));
+        assertEquals("Balances: 100.0 EUR", modelAndView.getModel().get("message"));
     }
 
     @Test
-    void testCheckBalanceAccountNotFound() {
+    void testCheckBalanceWithAccountNotFound() {
         String accountName = "account123";
-
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(null);
 
         ModelAndView modelAndView = balanceController.checkBalance(accountName);
@@ -69,20 +66,47 @@ class BalanceControllerTest {
     }
 
     @Test
-    void testCheckBalanceBalanceNotFound() {
+    void testCheckBalanceWithBalanceNotFound() {
         String accountName = "account123";
         Account account = new Account();
         account.setAccountName(accountName);
 
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(account);
-        when(balanceService.getBalanceByAccount(account)).thenReturn(null);
+        when(balanceService.getCurrentBalance(account, "EUR")).thenReturn(null);
 
         ModelAndView modelAndView = balanceController.checkBalance(accountName);
 
         verify(accountService).getAccountByNameOrNumber(accountName);
-        verify(balanceService).getBalanceByAccount(account);
+        verify(balanceService).getCurrentBalance(account, "EUR");
 
         assertEquals("balances", modelAndView.getViewName());
-        assertEquals("Balance not found for this account.", modelAndView.getModel().get("message"));
+        assertEquals("Balances not found for this account.", modelAndView.getModel().get("message"));
+    }
+
+    @Test
+    void testCheckBalanceWithMultipleCurrencies() {
+        String accountName = "account123";
+        Account account = new Account();
+        account.setAccountName(accountName);
+
+        BigDecimal balanceEur = BigDecimal.valueOf(100.00);
+        BigDecimal balanceUsd = BigDecimal.valueOf(200.00);
+        BigDecimal balanceGbp = BigDecimal.valueOf(300.00);
+
+        when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(account);
+        when(balanceService.getCurrentBalance(account, "EUR")).thenReturn(balanceEur);
+        when(balanceService.getCurrentBalance(account, "USD")).thenReturn(balanceUsd);
+        when(balanceService.getCurrentBalance(account, "GBP")).thenReturn(balanceGbp);
+
+        ModelAndView modelAndView = balanceController.checkBalance(accountName);
+
+        verify(accountService).getAccountByNameOrNumber(accountName);
+        verify(balanceService).getCurrentBalance(account, "EUR");
+        verify(balanceService).getCurrentBalance(account, "USD");
+        verify(balanceService).getCurrentBalance(account, "GBP");
+
+        assertEquals("balances", modelAndView.getViewName());
+        assertEquals("Balances: 100.0 EUR, 200.0 USD, 300.0 GBP", modelAndView.getModel().get("message"));
     }
 }
+
