@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -19,15 +18,6 @@ public class BalanceService {
 
     @Autowired
     private BalanceRepository balanceRepository;
-
-    @Transactional
-    public Balance createBalance(Account account) {
-        Balance balance = new Balance();
-        balance.setAccount(account);
-        balance.setBalanceAmount(BigDecimal.ZERO);
-        balance.setBalanceDate(new Date());
-        return balanceRepository.save(balance);
-    }
 
     public void updateBalance(Account account, String currency, BigDecimal amount) {
         Balance newBalance = new Balance();
@@ -63,9 +53,5 @@ public class BalanceService {
         return amount.compareTo(BigDecimal.ZERO) < 0 ? "Withdraw"
                 : amount.compareTo(BigDecimal.ZERO) > 0 ? "Deposit"
                 : "No Transaction";
-    }
-
-    public Balance getBalanceByAccountAndCurrency(Account account, String currency) {
-        return balanceRepository.findByAccountAndCurrency(account, currency);
     }
 }

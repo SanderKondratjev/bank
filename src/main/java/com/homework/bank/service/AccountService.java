@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.NonUniqueResultException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Random;
 
@@ -92,42 +91,41 @@ public class AccountService {
         }
     }
 
-        private static String generateIban () {
-            String country = "EE";
+    public static String generateIban() {
+        String country = "EE";
 
-            StringBuilder accountNumber = new StringBuilder();
-            Random random = new Random();
-            for (int i = 0; i < 12; i++) {
-                accountNumber.append(random.nextInt(10));
-            }
-
-            String iban = country + "00" + accountNumber;
-            int checksum = calculateIbanChecksum(iban);
-
-            String ibanChecksum = String.format("%02d", checksum);
-            iban = country + ibanChecksum + "0000" + accountNumber;
-
-            return iban;
+        StringBuilder accountNumber = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 12; i++) {
+            accountNumber.append(random.nextInt(10));
         }
 
-        private static int calculateIbanChecksum (String iban){
-            iban = iban.substring(4) + iban.substring(0, 2) + "00";
+        String iban = country + "00" + accountNumber;
+        int checksum = calculateIbanChecksum(iban);
 
-            String digits = iban.replaceAll("[^0-9]", "");
+        String ibanChecksum = String.format("%02d", checksum);
+        iban = country + ibanChecksum + "0000" + accountNumber;
 
-            BigInteger ibanNumber = new BigInteger(digits);
-            int checksum = 98 - ibanNumber.mod(BigInteger.valueOf(97)).intValue();
-
-            return checksum;
-        }
-
-        public Account getAccountByNameOrNumber (String accountSearch){
-            Account account = accountRepository.findByAccountName(accountSearch);
-
-            if (account == null) {
-                account = accountRepository.findByIban(accountSearch);
-            }
-
-            return account;
-        }
+        return iban;
     }
+
+    public static int calculateIbanChecksum(String iban) {
+        iban = iban.substring(4) + iban.substring(0, 2) + "00";
+
+        String digits = iban.replaceAll("[^0-9]", "");
+
+        BigInteger ibanNumber = new BigInteger(digits);
+
+        return 98 - ibanNumber.mod(BigInteger.valueOf(97)).intValue();
+    }
+
+    public Account getAccountByNameOrNumber(String accountSearch) {
+        Account account = accountRepository.findByAccountName(accountSearch);
+
+        if (account == null) {
+            account = accountRepository.findByIban(accountSearch);
+        }
+
+        return account;
+    }
+}

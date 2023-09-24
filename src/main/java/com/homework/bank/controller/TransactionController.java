@@ -1,10 +1,7 @@
 package com.homework.bank.controller;
 
 import com.homework.bank.model.Account;
-import com.homework.bank.model.AccountStatement;
-import com.homework.bank.model.Balance;
 import com.homework.bank.model.Transaction;
-import com.homework.bank.repository.AccountStatementRepository;
 import com.homework.bank.service.AccountService;
 import com.homework.bank.service.AccountStatementService;
 import com.homework.bank.service.BalanceService;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -33,9 +29,6 @@ public class TransactionController {
 
     @Autowired
     private AccountStatementService accountStatementService;
-
-    @Autowired
-    private AccountStatementRepository accountStatementRepository;
 
     @PostMapping("/search")
     public ModelAndView searchAccount(@RequestParam String accountSearch) {
@@ -63,12 +56,13 @@ public class TransactionController {
             @RequestParam String description,
             @RequestParam String currency
     ) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return createFailureModelAndView("Deposit amount cant be negative");
+        }
+
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
         if (account != null) {
-            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                return createFailureModelAndView("Deposit amount cant be negative");
-            }
 
             Transaction depositTransaction = transactionService.createDepositTransaction(account, amount, currency, description);
 
@@ -89,12 +83,13 @@ public class TransactionController {
             @RequestParam String description,
             @RequestParam String currency
     ) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return createFailureModelAndView("Withdrawal amount cant be negative");
+        }
+
         Account account = accountService.getAccountByNameOrNumber(accountName);
 
         if (account != null) {
-            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                return createFailureModelAndView("Withdrawal amount cant be negative");
-            }
 
             BigDecimal balance = balanceService.getCurrentBalance(account, currency);
 
