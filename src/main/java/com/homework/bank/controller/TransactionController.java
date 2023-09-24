@@ -6,6 +6,7 @@ import com.homework.bank.model.Balance;
 import com.homework.bank.model.Transaction;
 import com.homework.bank.repository.AccountStatementRepository;
 import com.homework.bank.service.AccountService;
+import com.homework.bank.service.AccountStatementService;
 import com.homework.bank.service.BalanceService;
 import com.homework.bank.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class TransactionController {
 
     @Autowired
     private BalanceService balanceService;
+
+    @Autowired
+    private AccountStatementService accountStatementService;
 
     @Autowired
     private AccountStatementRepository accountStatementRepository;
@@ -63,48 +67,18 @@ public class TransactionController {
 
         if (account != null) {
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                ModelAndView modelAndView = new ModelAndView("failure");
-                modelAndView.addObject("message", "Deposit amount cant be negative");
-                return modelAndView;
-            }
-            Transaction depositTransaction = new Transaction();
-            depositTransaction.setAccount(account);
-            depositTransaction.setTransactionType("DEPOSIT");
-            depositTransaction.setAmount(amount);
-            depositTransaction.setCurrency(currency);
-            depositTransaction.setDescription(description);
-            depositTransaction.setTransactionDate(new Date());
-            transactionService.createTransaction(depositTransaction);
-
-            Balance balance = balanceService.getBalanceByAccountAndCurrency(account, currency);
-            if (balance == null) {
-                balance = new Balance();
-                balance.setAccount(account);
-                balance.setBalanceAmount(BigDecimal.ZERO);
-                balance.setCurrency(currency);
+                return createFailureModelAndView("Deposit amount cant be negative");
             }
 
-            BigDecimal newBalance = balance.getBalanceAmount().add(amount);
-            balance.setBalanceAmount(newBalance);
-            balance.setBalanceDate(new Date());
-            balanceService.updateBalance(balance);
+            Transaction depositTransaction = transactionService.createDepositTransaction(account, amount, currency, description);
 
-            AccountStatement accountStatement = new AccountStatement();
-            accountStatement.setAccount(account);
-            accountStatement.setTransaction(depositTransaction);
-            accountStatement.setTransactionDate(new Date());
-            accountStatement.setAmount(amount);
-            accountStatement.setCurrency(currency);
-            accountStatement.setDescription(description);
-            accountStatementRepository.save(accountStatement);
+            balanceService.updateBalance(account, currency, amount);
 
-            ModelAndView modelAndView = new ModelAndView("success");
-            modelAndView.addObject("message", "Deposit successful");
-            return modelAndView;
+            accountStatementService.createAccountStatement(account, depositTransaction, amount, currency, description);
+
+            return createSuccessModelAndView("Deposit successful");
         } else {
-            ModelAndView modelAndView = new ModelAndView("failure");
-            modelAndView.addObject("message", "Account not found");
-            return modelAndView;
+            return createFailureModelAndView("Account not found");
         }
     }
 
@@ -119,50 +93,36 @@ public class TransactionController {
 
         if (account != null) {
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                ModelAndView modelAndView = new ModelAndView("failure");
-                modelAndView.addObject("message", "Withdrawal amount cant be negative");
-                return modelAndView;
+                return createFailureModelAndView("Withdrawal amount cant be negative");
             }
+
             Balance balance = balanceService.getBalanceByAccountAndCurrency(account, currency);
 
             if (balance != null && balance.getBalanceAmount().compareTo(amount) >= 0) {
-                Transaction withdrawalTransaction = new Transaction();
-                withdrawalTransaction.setAccount(account);
-                withdrawalTransaction.setTransactionType("WITHDRAWAL");
-                withdrawalTransaction.setAmount(amount.negate());
-                withdrawalTransaction.setCurrency(currency);
-                withdrawalTransaction.setDescription(description);
-                withdrawalTransaction.setTransactionDate(new Date());
-                transactionService.createTransaction(withdrawalTransaction);
+                Transaction withdrawalTransaction = transactionService.createWithdrawalTransaction(account, amount, currency, description);
 
-                BigDecimal newBalance = balance.getBalanceAmount().subtract(amount);
-                balance.setBalanceAmount(newBalance);
-                balance.setBalanceDate(new Date());
-                balanceService.updateBalance(balance);
+                balanceService.updateBalance(account, currency, amount.negate());
 
-                AccountStatement accountStatement = new AccountStatement();
-                accountStatement.setAccount(account);
-                accountStatement.setTransaction(withdrawalTransaction);
-                accountStatement.setTransactionDate(new Date());
-                accountStatement.setAmount(amount.negate());
-                accountStatement.setCurrency(currency);
-                accountStatement.setDescription(description);
-                accountStatementRepository.save(accountStatement);
+                accountStatementService.createAccountStatement(account, withdrawalTransaction, amount.negate(), currency, description);
 
-                ModelAndView modelAndView = new ModelAndView("success");
-                modelAndView.addObject("message", "Withdrawal successful");
-                return modelAndView;
+                return createSuccessModelAndView("Withdrawal successful");
             } else {
-                ModelAndView modelAndView = new ModelAndView("failure");
-                modelAndView.addObject("message", "Insufficient balance for withdrawal or currency not available");
-                return modelAndView;
+                return createFailureModelAndView("Insufficient balance for withdrawal or currency not available");
             }
         } else {
-            ModelAndView modelAndView = new ModelAndView("failure");
-            modelAndView.addObject("message", "Account not found");
-            return modelAndView;
+            return createFailureModelAndView("Account not found");
         }
     }
 
+    private ModelAndView createSuccessModelAndView(String message) {
+        ModelAndView modelAndView = new ModelAndView("success");
+        modelAndView.addObject("message", message);
+        return modelAndView;
+    }
 
+    private ModelAndView createFailureModelAndView(String message) {
+        ModelAndView modelAndView = new ModelAndView("failure");
+        modelAndView.addObject("message", message);
+        return modelAndView;
+    }
 }

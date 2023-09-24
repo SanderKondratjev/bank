@@ -25,11 +25,27 @@ public class BalanceService {
         return balanceRepository.save(balance);
     }
 
+    public void updateBalance(Account account, String currency, BigDecimal amount) {
+        Balance balance = getBalanceByAccountAndCurrency(account, currency);
+
+        if (balance == null) {
+            balance = new Balance();
+            balance.setAccount(account);
+            balance.setBalanceAmount(BigDecimal.ZERO);
+            balance.setCurrency(currency);
+        }
+
+        BigDecimal newBalance = balance.getBalanceAmount().add(amount);
+        balance.setBalanceAmount(newBalance);
+        balance.setBalanceDate(new Date());
+        updateBalance(balance);
+    }
+
+
     public Balance getBalanceByAccount(Account account) {
         return balanceRepository.findByAccount(account);
     }
 
-    @Transactional
     public void updateBalance(Balance balance) {
         balanceRepository.save(balance);
     }
