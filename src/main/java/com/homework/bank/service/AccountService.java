@@ -128,4 +128,8 @@ public class AccountService {
 
         return account;
     }
+
+    public void deleteAllAccounts() {
+        accountRepository.deleteAll();
+    }
 }

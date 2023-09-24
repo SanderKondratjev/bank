@@ -3,6 +3,7 @@ package com.homework.bank.controller;
 import com.homework.bank.model.Account;
 import com.homework.bank.model.Transaction;
 import com.homework.bank.service.AccountService;
+import com.homework.bank.service.AccountStatementService;
 import com.homework.bank.service.BalanceService;
 import com.homework.bank.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ public class TransactionControllerTest {
 
     @Mock
     private BalanceService balanceService;
+
+    @Mock
+    private AccountStatementService accountStatementService;
 
     @InjectMocks
     private TransactionController transactionController;
@@ -87,6 +91,9 @@ public class TransactionControllerTest {
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(account);
         when(transactionService.createDepositTransaction(account, amount, currency, description)).thenReturn(new Transaction());
 
+        doNothing().when(accountStatementService)
+                .createAccountStatement(any(), any(), any(), any(), any());
+
         ModelAndView modelAndView = transactionController.depositMoney(accountName, amount, description, currency);
 
         verify(accountService, times(1)).getAccountByNameOrNumber(accountName);
@@ -110,6 +117,9 @@ public class TransactionControllerTest {
         when(accountService.getAccountByNameOrNumber(accountName)).thenReturn(account);
         when(balanceService.getCurrentBalance(account, currency)).thenReturn(new BigDecimal("100.00"));
         when(transactionService.createWithdrawalTransaction(account, amount, currency, description)).thenReturn(new Transaction());
+
+        doNothing().when(accountStatementService)
+                .createAccountStatement(any(), any(), any(), any(), any());
 
         ModelAndView modelAndView = transactionController.withdrawMoney(accountName, amount, description, currency);
 
