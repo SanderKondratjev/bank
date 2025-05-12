@@ -6,5 +6,6 @@
 
     <include file="/db/changelog/accounts_and_transactions.xml"/>
     <include file="/db/changelog/balance_and_account_statement.xml"/>
+    <include file="/db/changelog/account_statement_foreign_keys.xml"/>
 
 </databaseChangeLog>
